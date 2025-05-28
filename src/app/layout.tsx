@@ -1,9 +1,10 @@
 
-import type {Metadata} from 'next';
-import {Geist, Geist_Mono} from 'next/font/google';
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { OfflineIndicator } from '@/components/OfflineIndicator'; // Import OfflineIndicator
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -31,6 +32,7 @@ export default function RootLayout({
         <OfflineIndicator /> {/* Add OfflineIndicator here */}
         {children}
         <Toaster />
+        <SpeedInsights />
       </body>
     </html>
   );
