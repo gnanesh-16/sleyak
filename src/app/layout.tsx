@@ -19,6 +19,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Todlex - Smart Link Organization', // Updated title
   description: 'Todlex helps you organize, manage, and revisit your important links effortlessly.', // Updated description
+  icons: {
+    apple: '/apple-touch-icon.png',
+    icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' }
+    ],
+  },
 };
 
 export default function RootLayout({
