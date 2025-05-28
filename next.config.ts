@@ -1,5 +1,5 @@
 
-import type {NextConfig} from 'next';
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -27,13 +27,13 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'www.youtube.com',
         port: '',
-        pathname: '/**', 
+        pathname: '/**',
       },
       // Allow images from any HTTPS source - useful for OG images
       // For production, consider restricting this further or using an image proxy
       {
         protocol: 'https',
-        hostname: '**', 
+        hostname: '**',
         port: '',
         pathname: '/**',
       }
