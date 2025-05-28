@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState, useCallback } from 'react';
@@ -8,6 +7,9 @@ import { KanbanBoard } from './KanbanBoard';
 import { LinkItemModal } from './LinkItemModal';
 import { AddTabModal } from './AddTabModal';
 import { ShareLinkModal } from './ShareLinkModal';
+import { GroupCardsToggle } from './GroupCardsToggle';
+import { CardGroupDialog } from './CardGroupDialog';
+import useCardGroups from '@/hooks/useCardGroups';
 import { useToast } from "@/hooks/use-toast";
 import { fetchLinkMetadata } from '@/app/actions';
 import { format, parseISO, isSameDay, startOfDay, isFuture, subDays } from 'date-fns';
@@ -21,6 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import useAnalyticsLog from '@/hooks/useAnalyticsLog';
 import useHistory from '@/hooks/useHistory';
 
@@ -59,22 +62,27 @@ export function Dashboard() {
   const [sharingLink, setSharingLink] = useState<LinkItem | null>(null);
   const [isBoardBlurred, setIsBoardBlurred] = useState(false);
 
+  // Group Cards Feature
+  const [isGroupMode, setIsGroupMode] = useState(false);
+  const [selectedCards, setSelectedCards] = useState<LinkItem[]>([]);
+  const { groups, createGroup, deleteGroup, getGroupsForTab } = useCardGroups();
+
 
   useEffect(() => {
     if (boardData.dateGroups.length > 0) {
       const currentActiveTabExists = boardData.dateGroups.some(dg => dg.dateString === activeTab);
       if (!activeTab || !currentActiveTabExists) {
-         const sortedGroups = [...boardData.dateGroups].sort((a, b) => b.dateString.localeCompare(a.dateString));
-         if (sortedGroups.length > 0) {
-           setActiveTab(sortedGroups[0].dateString);
-         } else {
-           setActiveTab("");
-         }
+        const sortedGroups = [...boardData.dateGroups].sort((a, b) => b.dateString.localeCompare(a.dateString));
+        if (sortedGroups.length > 0) {
+          setActiveTab(sortedGroups[0].dateString);
+        } else {
+          setActiveTab("");
+        }
       }
     } else if (activeTab && boardData.dateGroups.length === 0) {
       setActiveTab("");
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardData.dateGroups]);
 
   const handleAddLink = useCallback(async (url: string, userProvidedTitle?: string) => {
@@ -83,7 +91,7 @@ export function Dashboard() {
     if (!targetDateString) {
       // If no tab is active (e.g., board is empty), default to creating/using a "Today" tab.
       // Check if any tabs exist at all. If not, prompt user to create one.
-      if(boardData.dateGroups.length === 0) {
+      if (boardData.dateGroups.length === 0) {
         toast({ title: "No Tab Selected", description: "Please create or select a tab first to add links.", variant: "default" });
         return;
       }
@@ -124,13 +132,13 @@ export function Dashboard() {
       if (metadata.faviconUrl) {
         linkFavicon = metadata.faviconUrl;
       }
-       if (metadata.ogImageUrl) {
+      if (metadata.ogImageUrl) {
         linkOgImageUrl = metadata.ogImageUrl;
       }
-      toast({id: toastId, title: "Link Added", description: `"${linkTitle}" metadata fetched.`});
+      toast({ title: "Link Added", description: `"${linkTitle}" metadata fetched.` });
     } catch (error) {
       console.error("Failed to fetch metadata:", error);
-      toast({id: toastId, title: "Link Added (No Metadata)", description: `"${linkTitle}" added. Could not fetch metadata.`, variant: "default"});
+      toast({ title: "Link Added (No Metadata)", description: `"${linkTitle}" added. Could not fetch metadata.`, variant: "default" });
     }
 
 
@@ -139,13 +147,13 @@ export function Dashboard() {
       let targetGroup = newDateGroups.find(dg => dg.dateString === targetDateString);
 
       if (!targetGroup) {
-         // This case should ideally not be reached if activeTab is always valid.
-         // If it is, means the activeTab string doesn't match any existing group.
-         toast({ title: "Error", description: "Could not find the active tab to add the link.", variant: "destructive" });
-         setIsAddingLink(false);
-         return prevData; // Return previous data without changes
+        // This case should ideally not be reached if activeTab is always valid.
+        // If it is, means the activeTab string doesn't match any existing group.
+        toast({ title: "Error", description: "Could not find the active tab to add the link.", variant: "destructive" });
+        setIsAddingLink(false);
+        return prevData; // Return previous data without changes
       }
-      
+
       // Calculate orderInTab
       const maxOrderInTab = targetGroup.items.reduce((max, item) => Math.max(max, item.orderInTab || 0), 0);
       const newOrderInTab = maxOrderInTab + 1;
@@ -172,17 +180,17 @@ export function Dashboard() {
     // Log event using the title from the newly created newLink object
     logEvent('LINK_CREATED', { title: linkTitle, relatedId: crypto.randomUUID() }); // Assuming newLink.id is set correctly above.
     setIsAddingLink(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setBoardData, toast, activeTab, logEvent, boardData.dateGroups]); 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setBoardData, toast, activeTab, logEvent, boardData.dateGroups]);
 
   useEffect(() => {
     const handlePaste = (event: ClipboardEvent) => {
       const activeElement = document.activeElement;
       const isAnyModalOpen = isModalOpen || isAddTabModalOpen || showDeleteTabDialog || isShareModalOpen;
       const isGeneralInputFocused = activeElement &&
-                                 (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') &&
-                                 !activeElement.closest('.sm\\:max-w-\\[425px\\]') && 
-                                 !activeElement.closest('.sm\\:max-w-md');
+        (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') &&
+        !activeElement.closest('.sm\\:max-w-\\[425px\\]') &&
+        !activeElement.closest('.sm\\:max-w-md');
 
 
       if (isAddingLink || isAnyModalOpen || isGeneralInputFocused) return;
@@ -193,7 +201,7 @@ export function Dashboard() {
       }
       if (!activeTab && boardData.dateGroups.length > 0) {
         toast({ title: "No Tab Active", description: "Please select a tab to paste links.", variant: "default" });
-        return; 
+        return;
       }
 
 
@@ -210,22 +218,22 @@ export function Dashboard() {
     return () => {
       document.removeEventListener('paste', handlePaste);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleAddLink, isAddingLink, isModalOpen, isAddTabModalOpen, showDeleteTabDialog, isShareModalOpen, activeTab, toast, boardData.dateGroups.length]);
 
 
   const handleDeleteLink = (linkId: string) => {
-    let deletedLink: LinkItem | null = null;
-    let originalDateGroup = "";
-    let originalTabTitle = "";
+    let deletedLink: LinkItem | undefined = undefined;
+    let originalDateGroup: string = "";
+    let originalTabTitle: string = "";
 
     setBoardData(prevData => {
       const newDateGroups = (prevData.dateGroups || []).map(dg => {
         const itemToDelete = dg.items.find(item => item.id === linkId);
         if (itemToDelete) {
-            deletedLink = itemToDelete;
-            originalDateGroup = dg.dateString;
-            originalTabTitle = dg.title;
+          deletedLink = itemToDelete;
+          originalDateGroup = dg.dateString;
+          originalTabTitle = dg.title;
         }
         return {
           ...dg,
@@ -259,7 +267,7 @@ export function Dashboard() {
       const originalItem = prevData.dateGroups
         .flatMap(dg => dg.items)
         .find(item => item.id === updatedItem.id);
-      
+
       if (!originalItem) return prevData;
 
       const originalDateStringForGrouping = startOfDay(parseISO(originalItem.createdAt)).toISOString().split('T')[0];
@@ -282,9 +290,9 @@ export function Dashboard() {
           // A more robust solution might re-calculate order for the new group or use a different strategy.
           // For now, if it moves, it might disrupt the orderInTab sequence visually in the new tab.
           // Let's assign a new orderInTab when moving to ensure it's at the end of the new tab.
-           const maxOrderInNewTab = newGroup.items.reduce((max, item) => Math.max(max, item.orderInTab || 0), 0);
-           updatedItem.orderInTab = maxOrderInNewTab + 1;
-          
+          const maxOrderInNewTab = newGroup.items.reduce((max, item) => Math.max(max, item.orderInTab || 0), 0);
+          updatedItem.orderInTab = maxOrderInNewTab + 1;
+
           newGroup.items = [updatedItem, ...newGroup.items.filter(i => i.id !== updatedItem.id)];
           // Sort items by orderInTab after adding to new group
           newGroup.items.sort((a, b) => (a.orderInTab || 0) - (b.orderInTab || 0));
@@ -298,7 +306,7 @@ export function Dashboard() {
             items: [updatedItem],
           });
         }
-        
+
         newDateGroups = newDateGroups.filter(dg => dg.items.length > 0 || dg.dateString === newDateStringForGrouping);
         newDateGroups.sort((a, b) => b.dateString.localeCompare(a.dateString)); // Sort tabs
         setActiveTab(newDateStringForGrouping);
@@ -309,7 +317,7 @@ export function Dashboard() {
             return {
               ...dg,
               items: dg.items.map(item => (item.id === updatedItem.id ? updatedItem : item))
-                             .sort((a, b) => (a.orderInTab || 0) - (b.orderInTab || 0)), // Sort by orderInTab
+                .sort((a, b) => (a.orderInTab || 0) - (b.orderInTab || 0)), // Sort by orderInTab
             };
           }
           return dg;
@@ -323,11 +331,11 @@ export function Dashboard() {
   };
 
   const handleUpdateLinkDate = (linkId: string, date: Date | undefined) => {
-     setBoardData(prevData => {
-        const newDateGroups = (prevData.dateGroups || []).map(dg => ({
-          ...dg,
-          items: dg.items.map(item => item.id === linkId ? {...item, todoDate: date?.toISOString()} : item),
-        }));
+    setBoardData(prevData => {
+      const newDateGroups = (prevData.dateGroups || []).map(dg => ({
+        ...dg,
+        items: dg.items.map(item => item.id === linkId ? { ...item, todoDate: date?.toISOString() } : item),
+      }));
       return { ...prevData, dateGroups: newDateGroups };
     });
     toast({ title: "Date Updated", description: `To-do date for link has been ${date ? 'set' : 'cleared'}.` });
@@ -337,21 +345,21 @@ export function Dashboard() {
     const newDateString = selectedDate.toISOString().split('T')[0];
 
     if (isFuture(startOfDay(selectedDate))) {
-        toast({
-          title: "Future Date Tab Not Allowed",
-          description: "Cannot create tabs for future dates.",
-          variant: "destructive",
-        });
-        setIsAddTabModalOpen(false);
-        setIsBoardBlurred(false);
-        return;
+      toast({
+        title: "Future Date Tab Not Allowed",
+        description: "Cannot create tabs for future dates.",
+        variant: "destructive",
+      });
+      setIsAddTabModalOpen(false);
+      setIsBoardBlurred(false);
+      return;
     }
 
     setBoardData(prevData => {
       const existingGroup = prevData.dateGroups.find(dg => dg.dateString === newDateString);
       if (existingGroup) {
         toast({ title: "Tab Exists", description: `Tab for ${getFormattedDateTitle(newDateString)} already exists. Switching to it.`, variant: "default" });
-        setActiveTab(newDateString); 
+        setActiveTab(newDateString);
         return prevData;
       }
 
@@ -365,7 +373,7 @@ export function Dashboard() {
 
       logEvent('TAB_CREATED', { title: newGroup.title, relatedId: newGroup.dateString });
       toast({ title: "Tab Created", description: `New tab for ${newGroup.title} added.` });
-      setActiveTab(newDateString); 
+      setActiveTab(newDateString);
       return { ...prevData, dateGroups: updatedDateGroups };
     });
     setIsAddTabModalOpen(false);
@@ -407,10 +415,10 @@ export function Dashboard() {
     });
 
     if (linksToMoveToHistory.length > 0) {
-        addMultipleLinksToHistory(linksToMoveToHistory, tabToDelete, deletedTabTitle);
+      addMultipleLinksToHistory(linksToMoveToHistory, tabToDelete, deletedTabTitle);
     }
     logEvent('TAB_DELETED', { title: deletedTabTitle, relatedId: tabToDelete });
-    toast({ title: "Tab Moved to History", description: `Tab "${deletedTabTitle}" and its links moved to history.`});
+    toast({ title: "Tab Moved to History", description: `Tab "${deletedTabTitle}" and its links moved to history.` });
 
     setShowDeleteTabDialog(false);
     setTabToDelete(null);
@@ -427,7 +435,7 @@ export function Dashboard() {
     title: "Delete Tab?",
     description: `Are you sure you want to delete the tab "${getFormattedDateTitle(tabToDelete)}" and all its links? The links will be moved to History.`,
     actionText: "Delete Tab",
-  } : { title: "", description: "", actionText: ""};
+  } : { title: "", description: "", actionText: "" };
 
   const handleOpenShareModal = (linkItem: LinkItem) => {
     setSharingLink(linkItem);
@@ -441,17 +449,63 @@ export function Dashboard() {
     setIsBoardBlurred(false);
   };
 
+  // Group Cards Feature
+  const handleToggleGroupMode = (enabled: boolean) => {
+    setIsGroupMode(enabled);
+    // Clear selection when disabling group mode
+    if (!enabled) {
+      setSelectedCards([]);
+    }
+  };
+
+  const handleToggleCardSelection = (linkItem: LinkItem) => {
+    setSelectedCards(prev => {
+      const isSelected = prev.some(card => card.id === linkItem.id);
+      if (isSelected) {
+        return prev.filter(card => card.id !== linkItem.id);
+      } else {
+        return [...prev, linkItem];
+      }
+    });
+  };
+
+  const handleSaveCardGroup = (groupName: string) => {
+    const cardIds = selectedCards.map(card => card.id);
+    createGroup(groupName, cardIds, activeTab);
+    // Clear selection after saving
+    setSelectedCards([]);
+    // Exit group mode
+    setIsGroupMode(false);
+  };
+
+  const handleOpenCardGroup = (groupId: string) => {
+    const group = groups.find(g => g.id === groupId);
+    if (!group) return;
+
+    // Find all cards in the group
+    const activeGroup = boardData.dateGroups.find(dg => dg.dateString === activeTab);
+    if (!activeGroup) return;
+
+    // Set selected cards based on the group's card IDs
+    const groupCards = activeGroup.items.filter(item =>
+      group.cardIds.includes(item.id)
+    );
+
+    // Enable group mode and select the cards
+    setIsGroupMode(true);
+    setSelectedCards(groupCards);
+  };
 
   return (
     <div className={`flex flex-col h-[calc(100vh-var(--header-height))] ${isBoardBlurred ? 'backdrop-blur-sm' : ''} transition-all duration-300`}>
-       <style jsx global>{`
+      <style jsx global>{`
         :root {
           --header-height: 65px; 
           --input-section-height: 40px; 
         }
       `}</style>
       <div className="p-4 border-b">
-         <p className="text-xs text-muted-foreground container mx-auto text-center">Tip: You can paste links (Ctrl+V or Cmd+V) into the active tab.</p>
+        <p className="text-xs text-muted-foreground container mx-auto text-center">Tip: You can paste links (Ctrl+V or Cmd+V) into the active tab.</p>
       </div>
       <KanbanBoard
         boardData={boardData}
@@ -460,10 +514,52 @@ export function Dashboard() {
         onDeleteLink={handleDeleteLink}
         onEditLink={handleEditLink}
         onUpdateLinkDate={handleUpdateLinkDate}
-        onOpenAddTabModal={() => {setIsAddTabModalOpen(true); setIsBoardBlurred(true);}}
+        onOpenAddTabModal={() => { setIsAddTabModalOpen(true); setIsBoardBlurred(true); }}
         onAttemptDeleteTab={handleAttemptDeleteTab}
         onShareLink={handleOpenShareModal}
+        onBoardUpdate={(updatedData) => setBoardData(updatedData)}
+        isGroupMode={isGroupMode}
+        selectedCards={selectedCards}
+        onToggleGroupMode={handleToggleGroupMode}
+        onToggleCardSelection={handleToggleCardSelection}
       />
+
+      {isGroupMode && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-10 bg-primary text-primary-foreground rounded-md shadow-md px-4 py-2 flex items-center gap-2">
+          <span>Group Mode: {selectedCards.length} card{selectedCards.length !== 1 ? 's' : ''} selected</span>
+          <Button variant="secondary" size="sm" onClick={() => handleToggleGroupMode(false)}>
+            Exit Group Mode
+          </Button>
+        </div>
+      )}
+
+      {isGroupMode && selectedCards.length > 0 && (
+        <div className="fixed bottom-4 right-4 z-10">
+          <CardGroupDialog
+            selectedCards={selectedCards}
+            onSaveGroup={handleSaveCardGroup}
+            groups={groups}
+            onDeleteGroup={deleteGroup}
+            onOpenGroup={handleOpenCardGroup}
+            activeTab={activeTab}
+          />
+        </div>
+      )}
+
+      {/* Show My Groups button in normal mode */}
+      {!isGroupMode && activeTab && getGroupsForTab(activeTab).length > 0 && (
+        <div className="fixed bottom-4 right-4 z-10">
+          <CardGroupDialog
+            selectedCards={[]}
+            onSaveGroup={handleSaveCardGroup}
+            groups={groups}
+            onDeleteGroup={deleteGroup}
+            onOpenGroup={handleOpenCardGroup}
+            activeTab={activeTab}
+          />
+        </div>
+      )}
+
       {editingLink && (
         <LinkItemModal
           isOpen={isModalOpen}
@@ -474,7 +570,7 @@ export function Dashboard() {
       )}
       <AddTabModal
         isOpen={isAddTabModalOpen}
-        onClose={() => {setIsAddTabModalOpen(false); setIsBoardBlurred(false);}}
+        onClose={() => { setIsAddTabModalOpen(false); setIsBoardBlurred(false); }}
         onAddTab={handleCreateTab}
       />
       {sharingLink && (
@@ -485,7 +581,7 @@ export function Dashboard() {
           linkTitle={sharingLink.title}
         />
       )}
-      <AlertDialog open={showDeleteTabDialog} onOpenChange={(open) => { if (!open) handleCancelDeleteTab(); else setShowDeleteTabDialog(open);}}>
+      <AlertDialog open={showDeleteTabDialog} onOpenChange={(open) => { if (!open) handleCancelDeleteTab(); else setShowDeleteTabDialog(open); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{deleteDialogContent.title}</AlertDialogTitle>
@@ -496,7 +592,7 @@ export function Dashboard() {
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCancelDeleteTab}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmDeleteTab} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
-                {deleteDialogContent.actionText}
+              {deleteDialogContent.actionText}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -23,6 +23,9 @@ interface KanbanCardProps {
   onDropOnCard: (event: React.DragEvent<HTMLDivElement>, targetLinkId: string) => void;
   isDragging: boolean; // True if any card is being dragged globally
   draggingCardId: string | null; // The ID of the card currently being dragged, or null
+  isGroupMode?: boolean; // Whether group mode is active
+  isSelected?: boolean; // Whether this card is selected in group mode
+  onToggleSelect?: (linkItem: LinkItem) => void; // Toggle card selection in group mode
 }
 
 export function KanbanCard({
@@ -36,7 +39,10 @@ export function KanbanCard({
   onDragEndCard,
   onDropOnCard,
   isDragging,
-  draggingCardId
+  draggingCardId,
+  isGroupMode = false,
+  isSelected = false,
+  onToggleSelect
 }: KanbanCardProps) {
   const [imageError, setImageError] = useState(false);
   const indianTimeZone = 'Asia/Kolkata';
@@ -113,22 +119,26 @@ export function KanbanCard({
 
   return (
     <Card
-      draggable={!isBoardLocked}
-      onDragStart={handleDragStart}
+      draggable={!isBoardLocked && !isGroupMode}
+      onDragStart={!isGroupMode ? handleDragStart : undefined}
       onDragEnd={(e) => {
-        if (e.currentTarget) {
+        if (!isGroupMode && e.currentTarget) {
           e.currentTarget.classList.remove('dragging');
+          onDragEndCard(e);
         }
-        onDragEndCard(e);
       }}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
+      onDragOver={!isGroupMode ? handleDragOver : undefined}
+      onDragLeave={!isGroupMode ? handleDragLeave : undefined}
+      onDrop={!isGroupMode ? handleDrop : undefined}
+      onClick={isGroupMode && onToggleSelect ? () => onToggleSelect(linkItem) : undefined}
       className={cn(
         'card-hover relative',
         {
-          'dragging': isDragging && draggingCardId === linkItem.id,
-          'drop-target': isDragging && draggingCardId !== linkItem.id
+          'dragging': !isGroupMode && isDragging && draggingCardId === linkItem.id,
+          'drop-target': !isGroupMode && isDragging && draggingCardId !== linkItem.id,
+          'opacity-50 bg-black/10': isGroupMode && !isSelected,
+          'ring-2 ring-primary': isGroupMode && isSelected,
+          'cursor-pointer': isGroupMode
         }
       )}
     >

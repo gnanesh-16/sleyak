@@ -14,6 +14,9 @@ interface DateLinksListProps {
   isDragging: boolean;
   draggingCardId: string | null;
   onSwapItems: (sourceId: string, targetId: string) => void;
+  isGroupMode?: boolean;
+  selectedCards?: LinkItem[];
+  onToggleCardSelection?: (card: LinkItem) => void;
 }
 
 export function DateLinksList({
@@ -25,7 +28,10 @@ export function DateLinksList({
   isCurrentTab,
   isDragging,
   draggingCardId,
-  onSwapItems
+  onSwapItems,
+  isGroupMode = false,
+  selectedCards = [],
+  onToggleCardSelection
 }: DateLinksListProps) {
 
   if (items.length === 0) {
@@ -85,6 +91,9 @@ export function DateLinksList({
           }}
           isDragging={isDragging}
           draggingCardId={draggingCardId}
+          isGroupMode={isGroupMode}
+          isSelected={selectedCards.some(card => card.id === linkItem.id)}
+          onToggleSelect={onToggleCardSelection}
         />
       ))}
     </div>

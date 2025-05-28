@@ -10,6 +10,7 @@ import React from 'react';
 import { isFuture, parseISO, startOfDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useBoardState } from '@/hooks/useBoardState';
+import { GroupCardsToggle } from './GroupCardsToggle';
 
 
 interface KanbanBoardProps {
@@ -22,7 +23,11 @@ interface KanbanBoardProps {
   onOpenAddTabModal: () => void;
   onAttemptDeleteTab: (dateString: string) => void;
   onShareLink: (linkItem: LinkItem) => void;
-  onBoardUpdate: (updatedBoardData: BoardData) => void; // Add this to handle board updates
+  onBoardUpdate: (updatedBoardData: BoardData) => void;
+  isGroupMode?: boolean;
+  selectedCards?: LinkItem[];
+  onToggleGroupMode?: (enabled: boolean) => void;
+  onToggleCardSelection?: (card: LinkItem) => void;
 }
 
 export function KanbanBoard({
@@ -35,7 +40,11 @@ export function KanbanBoard({
   onOpenAddTabModal,
   onAttemptDeleteTab,
   onShareLink,
-  onBoardUpdate  // Add this to handle board updates
+  onBoardUpdate,
+  isGroupMode = false,
+  selectedCards = [],
+  onToggleGroupMode,
+  onToggleCardSelection
 }: KanbanBoardProps) {
   const { isDragging, draggingCardId, handleDragStart, handleDragEnd, handleSwapItems } = useBoardState();
 
@@ -140,9 +149,17 @@ export function KanbanBoard({
             </TabsList>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
-          <Button variant="outline" onClick={onOpenAddTabModal} className="flex-shrink-0">
-            <PlusCircle className="mr-2 h-4 w-4" /> Add Tab
-          </Button>
+          <div className="flex-shrink-0 flex gap-2 items-center">
+            {onToggleGroupMode && (
+              <GroupCardsToggle
+                isGroupMode={isGroupMode}
+                onToggleGroupMode={onToggleGroupMode}
+              />
+            )}
+            <Button variant="outline" onClick={onOpenAddTabModal}>
+              <PlusCircle className="mr-2 h-4 w-4" /> Add Tab
+            </Button>
+          </div>
         </div>
 
         <div className="flex-grow mt-2 overflow-y-auto">
@@ -158,6 +175,9 @@ export function KanbanBoard({
                 isDragging={isDragging}
                 draggingCardId={draggingCardId}
                 onSwapItems={onSwapItems}
+                isGroupMode={isGroupMode}
+                selectedCards={selectedCards}
+                onToggleCardSelection={onToggleCardSelection}
               />
             </TabsContent>
           ))}
