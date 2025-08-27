@@ -2,39 +2,7 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import {
-    ArrowRight,
-    CheckCircle,
-    Zap,
-    Eye,
-    Users,
-    Edit,
-    Search,
-    ClipboardPaste,
-    CalendarClock,
-    Settings2,
-    UserCog,
-    Palette as PaletteIcon,
-    HelpCircle as HelpCircleIcon,
-    ChevronDown,
-    LayoutDashboard,
-    ShieldCheck,
-    MessageSquareQuestion,
-    LayoutGrid,
-    Sparkles,
-    Target,
-    BookOpen,
-    Lightbulb,
-    Briefcase,
-    FileText,
-    Bookmark,
-    Share2,
-    Copy,
-    Link as LinkIconLucide, // Renamed to avoid conflict with Next.js Link
-    Instagram,
-    Twitter,
-    Globe
-} from 'lucide-react';
+import { ArrowRight, Zap, Eye, CheckCircle, LayoutGrid, Sparkles, Cpu, Workflow, Globe2, Calendar as CalendarIcon } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardSkeleton } from '@/components/DashboardSkeleton';
@@ -60,10 +28,10 @@ import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
 
 
-const TodlexLogo = ({className}: {className?: string}) => (
+const TodlexLogo = ({ className }: { className?: string }) => (
   <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className={cn("text-primary", className)}>
     <path d="M6 18H18V16H6V18ZM6 14H18V12H6V14ZM6 10H18V8H6V10Z" />
-    <path d="M4 20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V4C20 2.89543 19.1046 2 18 2H6C4.89543 2 4 2.89543 4 4V20ZM6 4H18V20H6V4Z" fillOpacity="0.3"/>
+    <path d="M4 20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V4C20 2.89543 19.1046 2 18 2H6C4.89543 2 4 2.89543 4 4V20ZM6 4H18V20H6V4Z" fillOpacity="0.3" />
   </svg>
 );
 
@@ -74,72 +42,9 @@ const CompanyLogoPlaceholder = ({ name, className }: { name: string, className?:
 );
 
 
-const AdminLoginModal = ({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChange: (open: boolean) => void }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { toast } = useToast();
-  const router = useRouter();
+// Admin & auth removed per 2025 redesign requirements.
 
-  const handleAdminLogin = () => {
-    if (email === "balusagnaneshsalesfor@gmail.com" && password === "mygnaneshsales@1234&^%$8") {
-      toast({
-        title: "Admin Login Successful (Conceptual)",
-        description: "Redirecting to conceptual admin dashboard...",
-      });
-      onOpenChange(false);
-      router.push('/admin/dashboard');
-    } else {
-      toast({
-        title: "Admin Login Failed (Conceptual)",
-        description: "Invalid email or password.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md data-[state=open]:motion-safe:animate-fadeIn data-[state=closed]:motion-safe:animate-fadeOut bg-card/95 backdrop-blur-md dark">
-        <DialogHeader>
-          <DialogTitle className="text-2xl flex items-center gap-2 text-foreground"><UserCog className="h-6 w-6 text-primary"/> Admin Login</DialogTitle>
-          <DialogDescription className="text-muted-foreground">
-            Enter administrator credentials to access the admin panel.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="admin-email" className="text-muted-foreground">Email</Label>
-            <Input
-              id="admin-email"
-              type="email"
-              placeholder="admin@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-input border-border focus:ring-primary"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="admin-password" className="text-muted-foreground">Password</Label>
-            <Input
-              id="admin-password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-input border-border focus:ring-primary"
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button type="button" onClick={handleAdminLogin} className="bg-primary text-primary-foreground hover:bg-primary/90">Login</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-const AnimatedScrollSection: React.FC<{children: React.ReactNode, className?: string, delay?: string }> = ({ children, className, delay }) => {
+const AnimatedScrollSection: React.FC<{ children: React.ReactNode, className?: string, delay?: string }> = ({ children, className, delay }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -154,7 +59,7 @@ const AnimatedScrollSection: React.FC<{children: React.ReactNode, className?: st
         }
       },
       {
-        threshold: 0.1, 
+        threshold: 0.1,
       }
     );
 
@@ -170,8 +75,8 @@ const AnimatedScrollSection: React.FC<{children: React.ReactNode, className?: st
   }, []);
 
   return (
-    <div 
-      ref={ref} 
+    <div
+      ref={ref}
       className={cn("scroll-animate", isVisible && "is-visible", className)}
       style={{ transitionDelay: isVisible ? delay : undefined }}
     >
@@ -184,7 +89,7 @@ const AnimatedScrollSection: React.FC<{children: React.ReactNode, className?: st
 export default function LandingPage() {
   const [isLoadingDashboard, setIsLoadingDashboard] = useState(false);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
-  const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
+  // Auth removed; state cleaned.
   const { toast } = useToast();
   const router = useRouter();
 
@@ -192,9 +97,7 @@ export default function LandingPage() {
     setCurrentYear(new Date().getFullYear());
   }, []);
 
-  const handleGetStartedClick = () => {
-    setIsLoadingDashboard(true);
-  };
+  const handleGetStartedClick = () => setIsLoadingDashboard(true);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -212,97 +115,36 @@ export default function LandingPage() {
     return <DashboardSkeleton />;
   }
 
-  const coreFeatures = [
-    {
-      icon: <Zap className="h-7 w-7 text-primary" />,
-      title: "Effortless Capture",
-      description: "Paste links. Todlex auto-organizes by date.",
-    },
-    {
-      icon: <Eye className="h-7 w-7 text-primary" />,
-      title: "Visual Timeline",
-      description: "Clean board, rich previews, grouped by date.",
-    },
-    {
-      icon: <CheckCircle className="h-7 w-7 text-primary" />,
-      title: "Actionable Links",
-      description: "Assign to-do dates. Turn links into tasks.",
-    },
-     {
-      icon: <LayoutGrid className="h-7 w-7 text-primary" />,
-      title: "Organized Views",
-      description: "Navigate history with intuitive date tabbing.",
-    },
+  const featureHighlights = [
+    { icon: <Zap className="h-6 w-6" />, title: "Zero-Friction Capture", blurb: "Just paste. We enrich & categorize instantly." },
+    { icon: <Eye className="h-6 w-6" />, title: "Temporal Memory", blurb: "Revisit what you found—organized by day." },
+    { icon: <CheckCircle className="h-6 w-6" />, title: "Act On It", blurb: "Convert links into dated micro‑tasks." },
+    { icon: <LayoutGrid className="h-6 w-6" />, title: "Adaptive Tabs", blurb: "Date-driven views that evolve with you." },
+    { icon: <Sparkles className="h-6 w-6" />, title: "Smart Metadata", blurb: "Auto preview, favicon, OG & context." },
+    { icon: <Cpu className="h-6 w-6" />, title: "Future‑Ready AI", blurb: "Genkit pipeline foundation for next upgrades." },
+    { icon: <Workflow className="h-6 w-6" />, title: "Flow-State UX", blurb: "Keyboard & paste-first interactions." },
+    { icon: <CalendarIcon className="h-6 w-6" />, title: "Time Awareness", blurb: "Today / Yesterday semantics built‑in." },
   ];
 
-  const useCases = [
-    {
-      icon: <Search className="h-8 w-8 text-primary" />,
-      title: "Researchers & Students",
-      description: "Collect sources, organized by discovery date. Add to-do dates for review.",
-    },
-    {
-      icon: <Edit className="h-8 w-8 text-primary" />,
-      title: "Content Creators",
-      description: "Save inspiration. Build your content repository chronologically.",
-    },
-    {
-      icon: <Target className="h-8 w-8 text-primary" />,
-      title: "Project Managers",
-      description: "Track resources related to project milestones over time.",
-    },
-    {
-      icon: <Sparkles className="h-8 w-8 text-primary" />,
-      title: "Personal Productivity",
-      description: "Save articles, tutorials. Create a personal knowledge timeline.",
-    }
-  ];
-
-  const howItWorksSteps = [
-    {
-      step: 1,
-      icon: <ClipboardPaste className="h-10 w-10 text-primary mb-3" />,
-      title: "Paste Any Link",
-      description: "Copy a URL and paste it into your active Todlex date tab."
-    },
-    {
-      step: 2,
-      icon: <CalendarClock className="h-10 w-10 text-primary mb-3" />,
-      title: "Auto-Organized",
-      description: "Todlex fetches metadata and organizes your link by date."
-    },
-    {
-      step: 3,
-      icon: <Settings2 className="h-10 w-10 text-primary mb-3" />,
-      title: "Manage & Act",
-      description: "Find links easily, view previews, and assign to-do dates."
-    }
+  const processPillars = [
+    { step: "01", title: "Capture", desc: "Paste or drop any URL. Instant ingestion." },
+    { step: "02", title: "Enrich", desc: "Metadata, visuals & ordering applied." },
+    { step: "03", title: "Organize", desc: "Date tabs + manual grouping when needed." },
+    { step: "04", title: "Act", desc: "Assign dates; surface what matters today." },
   ];
 
   return (
-    <div className={cn(
-        "flex flex-col min-h-screen bg-background text-foreground dark dots-background", 
-        isAdminLoginOpen && "blur-sm" 
-      )}>
+    <div className={cn("flex flex-col min-h-screen bg-gradient-to-b from-background via-background/60 to-background text-foreground relative")}>
       {/* Header */}
-      <header className="py-3 px-6 sm:px-8 sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
+      <header className="py-4 px-6 sm:px-10 sticky top-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border/40">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <TodlexLogo />
-            <span className="text-xl font-semibold text-foreground">Todlex</span>
+            <span className="text-xl font-semibold tracking-tight">Todlex</span>
           </div>
-          <div className="flex items-center gap-2">
-             <Button variant="ghost" size="sm" onClick={() => router.push('/login')} className="text-xs text-muted-foreground hover:text-foreground hidden sm:inline-flex">
-              Login
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => router.push('/signup')} className="text-xs text-muted-foreground hover:text-foreground hidden sm:inline-flex">
-              Sign Up
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => setIsAdminLoginOpen(true)} className="text-xs text-muted-foreground hover:text-foreground">
-              <UserCog className="mr-1.5 h-3.5 w-3.5" /> Admin
-            </Button>
-             <Button variant="default" onClick={handleGetStartedClick} className="text-sm font-medium rounded-full px-5 py-2.5 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
-              Go to App <ArrowRight className="ml-1.5 h-4 w-4" />
+          <div className="flex items-center gap-3">
+            <Button variant="default" onClick={handleGetStartedClick} className="text-sm font-medium rounded-full px-6 h-10 shadow-md shadow-primary/20">
+              Open App <ArrowRight className="ml-1.5 h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -310,42 +152,52 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main className="flex-grow">
-        <section className="relative hero-gradient-background rounded-b-3xl md:rounded-b-[3rem] overflow-hidden">
-          <div className="container mx-auto px-6 py-24 md:py-40 text-center flex flex-col items-center">
-            {/* Title removed as per request */}
-            <AnimatedScrollSection delay="0.1s">
-              <p className="text-lg sm:text-xl text-slate-200/90 mb-10 leading-relaxed max-w-2xl mx-auto">
-                Transform scattered links into an organized, actionable, and visual timeline. Capture, manage, and revisit content effortlessly.
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none [mask-image:radial-gradient(circle_at_center,white,transparent)] bg-[radial-gradient(circle_at_30%_30%,hsl(var(--primary)/0.15),transparent_60%),radial-gradient(circle_at_70%_70%,hsl(var(--primary)/0.08),transparent_60%)]" />
+          <div className="container mx-auto px-6 pt-28 pb-24 md:pt-36 md:pb-40 text-center flex flex-col items-center relative">
+            <AnimatedScrollSection delay="0.05s">
+              <h1 className="text-4xl md:text-6xl font-semibold tracking-tight bg-gradient-to-b from-foreground to-foreground/70 text-transparent bg-clip-text mb-6 max-w-5xl leading-[1.05]">
+                The temporal workspace <br className="hidden md:block" /> 
+              </h1>
+            </AnimatedScrollSection>
+            <AnimatedScrollSection delay="0.15s">
+              <p className="text-base md:text-xl text-muted-foreground/90 mb-10 leading-relaxed max-w-2xl mx-auto">
+                Capture first. Structure emerges automatically. Stop shoving URLs into endless folders—experience a living day‑by‑day canvas.
               </p>
             </AnimatedScrollSection>
-            <AnimatedScrollSection delay="0.2s">
-              <Button
-                size="lg"
-                className="text-lg py-7 px-12 rounded-full shadow-2xl bg-white text-slate-900 hover:bg-slate-200 transition-all duration-300 transform hover:scale-105"
-                onClick={handleGetStartedClick}
-              >
-                Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+            <AnimatedScrollSection delay="0.25s">
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <Button size="lg" onClick={handleGetStartedClick} className="h-14 px-10 rounded-full text-base font-medium bg-primary relative overflow-hidden">
+                  <span className="relative z-10 flex items-center">Start Organizing <ArrowRight className="ml-2 h-5 w-5" /></span>
+                </Button>
+                <Button size="lg" variant="outline" onClick={handleGetStartedClick} className="h-14 px-10 rounded-full text-base font-medium backdrop-blur supports-[backdrop-filter]:bg-background/50">
+                  Live Demo
+                </Button>
+              </div>
             </AnimatedScrollSection>
           </div>
         </section>
-        
-        
+
+
         {/* Core Features Section */}
-        <AnimatedScrollSection className="py-16 md:py-24 bg-background">
+        <AnimatedScrollSection className="py-24 bg-background border-t border-border/30">
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-16 [text-shadow:0_1px_3px_hsl(var(--foreground)/0.1)]">
-              Why Todlex is Different
-            </h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {coreFeatures.map((feature, index) => (
-                <AnimatedScrollSection key={index} delay={`${index * 0.1}s`}>
-                  <div className="bg-card/80 backdrop-blur-sm p-6 rounded-xl shadow-lg perspective-hover flex flex-col items-center text-center border border-border/50">
-                    <div className="p-3 bg-primary/10 rounded-full mb-5 inline-block">
-                      {feature.icon}
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-10 mb-14">
+              <div>
+                <h2 className="text-3xl md:text-5xl font-semibold tracking-tight mb-4">Built for velocity</h2>
+                <p className="text-muted-foreground max-w-xl text-base md:text-lg">A modern spatial layer over your research, learning & execution. Design language optimized for 2025 attention patterns: low chrome, high semantic contrast.</p>
+              </div>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+              {featureHighlights.map((f, i) => (
+                <AnimatedScrollSection key={f.title} delay={`${i * 0.05}s`}>
+                  <div className="group relative h-full rounded-2xl border border-border/40 bg-gradient-to-b from-card/80 to-card/40 backdrop-blur-sm p-5 flex flex-col overflow-hidden">
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary)/0.12),transparent_60%)]" />
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">{f.icon}</span>
+                      <h3 className="text-base font-medium leading-tight">{f.title}</h3>
                     </div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">{feature.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed pr-2">{f.blurb}</p>
                   </div>
                 </AnimatedScrollSection>
               ))}
@@ -354,97 +206,61 @@ export default function LandingPage() {
         </AnimatedScrollSection>
 
         {/* How It Works Section */}
-        <AnimatedScrollSection className="py-16 md:py-24 bg-card/30">
+        <AnimatedScrollSection className="py-24 bg-card/20 border-y border-border/30">
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-4 [text-shadow:0_1px_3px_hsl(var(--foreground)/0.1)]">Get Started in Seconds</h2>
-            <p className="text-center text-muted-foreground mb-16 max-w-2xl mx-auto">
-              Organizing your digital life with Todlex is simple and intuitive.
-            </p>
-            <div className="grid md:grid-cols-3 gap-x-8 gap-y-12">
-              {howItWorksSteps.map((step, index) => (
-                 <AnimatedScrollSection key={step.step} delay={`${index * 0.1}s`}>
-                    <div className="bg-card p-8 rounded-xl shadow-lg text-center border border-border/50 perspective-hover">
-                      <div className="relative mb-5">
-                        <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground h-10 w-10 rounded-full flex items-center justify-center text-lg font-bold shadow-md border-2 border-background">
-                          {step.step}
-                        </div>
-                        <div className="pt-6 flex justify-center">{step.icon}</div>
-                      </div>
-                      <h3 className="text-xl font-semibold text-foreground mb-2">{step.title}</h3>
-                      <p className="text-muted-foreground text-sm">{step.description}</p>
+            <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-center mb-4">Flow pipeline</h2>
+            <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-16">A four stage lifecycle. Optimized for mental load reduction and recall.</p>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+              {processPillars.map((p, i) => (
+                <AnimatedScrollSection key={p.step} delay={`${i * 0.07}s`}>
+                  <div className="relative h-full rounded-2xl border border-border/40 bg-card/60 backdrop-blur-sm p-6 flex flex-col">
+                    <div className="mb-6 flex items-center justify-between">
+                      <span className="text-xs font-mono tracking-widest text-primary/80">{p.step}</span>
+                      <span className="w-2 h-2 rounded-full bg-primary/70 shadow-[0_0_0_4px_hsl(var(--primary)/0.15)]" />
                     </div>
-                 </AnimatedScrollSection>
+                    <h3 className="text-lg font-medium mb-2">{p.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
+                  </div>
+                </AnimatedScrollSection>
               ))}
             </div>
           </div>
         </AnimatedScrollSection>
-        
+
         {/* "Todlex in Action" Visual Section Placeholder */}
-        <AnimatedScrollSection className="py-16 md:py-24 bg-background">
-          <div className="container mx-auto px-6 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-5 [text-shadow:0_1px_3px_hsl(var(--foreground)/0.1)]">Todlex in Action</h2>
-            <p className="text-muted-foreground mb-10 max-w-xl mx-auto">
-              See how Todlex transforms your link management into a visual and organized experience.
-            </p>
-            <div className="bg-card p-2 md:p-3 rounded-xl shadow-2xl inline-block border border-border/50 hover:scale-[1.02] transition-transform duration-300 max-w-4xl mx-auto">
-              <Image
-                src="https://placehold.co/800x500.png"
-                alt="Todlex Dashboard Preview"
-                width={800}
-                height={500}
-                className="rounded-lg"
-                data-ai-hint="kanban board productivity"
-              />
+        <AnimatedScrollSection className="py-28 bg-background relative">
+          <div className="container mx-auto px-6">
+            <div className="relative rounded-3xl border border-border/40 bg-gradient-to-br from-card/70 via-card/40 to-card/20 p-10 md:p-16 overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-60 bg-[linear-gradient(120deg,hsl(var(--primary)/0.08),transparent_40%,transparent),radial-gradient(circle_at_80%_20%,hsl(var(--primary)/0.12),transparent_55%)]" />
+              <div className="relative z-10 max-w-3xl">
+                <h2 className="text-3xl md:text-5xl font-semibold tracking-tight mb-6">Your cognition layer</h2>
+                <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-10">A single temporal surface for research bursts, learning sprints & execution context. No account required—jump straight into structured clarity.</p>
+                <Button size="lg" onClick={handleGetStartedClick} className="h-14 px-10 rounded-full text-base font-medium shadow-lg shadow-primary/25">Launch Now <ArrowRight className="ml-2 h-5 w-5" /></Button>
+              </div>
             </div>
           </div>
         </AnimatedScrollSection>
 
         {/* Use Cases Section */}
-        <AnimatedScrollSection className="py-16 md:py-24 bg-card/30">
-            <div className="container mx-auto px-6">
-                <h2 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-4 [text-shadow:0_1px_3px_hsl(var(--foreground)/0.1)]">Perfect For...</h2>
-                <p className="text-center text-muted-foreground mb-16 max-w-2xl mx-auto">
-                    Todlex adapts to your workflow, whether you're a student, professional, or curious learner.
-                </p>
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {useCases.map((useCase, index) => (
-                       <AnimatedScrollSection key={index} delay={`${index * 0.05}s`}>
-                        <div className="bg-card p-8 rounded-xl shadow-lg perspective-hover border border-border/50">
-                            <div className="mb-5 flex justify-center">
-                                {useCase.icon}
-                            </div>
-                            <h3 className="text-lg font-semibold text-foreground mb-2 text-center">{useCase.title}</h3>
-                            <p className="text-muted-foreground text-sm leading-relaxed text-center">{useCase.description}</p>
-                        </div>
-                       </AnimatedScrollSection>
-                    ))}
-                </div>
-            </div>
-        </AnimatedScrollSection>
+        {/* Removed "Perfect For" section per new concise narrative focus */}
 
       </main>
 
       {/* Footer */}
       <footer className="py-10 border-t border-border/30 bg-card/20">
         <div className="container mx-auto px-6 text-center">
-            <div className="flex items-center justify-center gap-2 mb-3">
-                <TodlexLogo className="h-7 w-7"/> <span className="text-lg font-semibold text-foreground">Todlex</span>
-            </div>
-            <p className="text-sm text-muted-foreground">
-                Simplifying your digital life, one link at a time.
-            </p>
-            <p className="text-xs text-muted-foreground mt-6">
-                {currentYear !== null ? `© ${currentYear} Todlex. All rights reserved.` : '© Todlex. All rights reserved.'}
-            </p>
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <TodlexLogo className="h-7 w-7" /> <span className="text-lg font-semibold text-foreground">Todlex</span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Simplifying your digital life, one link at a time.
+          </p>
+          <p className="text-xs text-muted-foreground mt-6">
+            {currentYear !== null ? `© ${currentYear} Todlex. All rights reserved.` : '© Todlex. All rights reserved.'}
+          </p>
         </div>
       </footer>
-      {isAdminLoginOpen && (
-         <div
-            className="fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm" 
-            onClick={() => setIsAdminLoginOpen(false)}
-          />
-      )}
-      <AdminLoginModal isOpen={isAdminLoginOpen} onOpenChange={setIsAdminLoginOpen} />
+      {/* Auth/admin modal removed */}
     </div>
   );
 }

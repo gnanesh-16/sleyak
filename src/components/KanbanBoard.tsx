@@ -106,11 +106,11 @@ export function KanbanBoard({
   }
 
   return (
-    <div className="flex flex-col flex-grow p-4 dots-background overflow-hidden h-[calc(100vh-var(--header-height)-var(--input-section-height))]">
+    <div className="flex flex-col flex-grow p-3 md:p-4 overflow-hidden h-[calc(100vh-var(--header-height)-var(--input-section-height))] bg-gradient-to-b from-background via-background/60 to-background">
       <Tabs value={currentActiveTab} onValueChange={setActiveTab} className="flex flex-col h-full">
-        <div className="flex items-center gap-2 mb-2">
-          <ScrollArea className="flex-grow w-full whitespace-nowrap rounded-md border">
-            <TabsList className="inline-flex h-auto p-1">
+        <div className="flex items-center gap-3 mb-3">
+          <ScrollArea className="flex-grow w-full whitespace-nowrap rounded-2xl border border-border/40 bg-card/40 backdrop-blur">
+            <TabsList className="inline-flex h-auto p-1 gap-1">
               {displayableDateGroups.map((group) => {
                 const isFutureTab = isFuture(startOfDay(parseISO(group.dateString)));
                 return (
@@ -118,8 +118,8 @@ export function KanbanBoard({
                     key={group.dateString}
                     value={group.dateString}
                     className={cn(
-                      "px-3 py-2 relative group/tab data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                      isFutureTab && "border-red-500 border-2"
+                      "px-4 py-2 relative group/tab rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm font-medium transition-all",
+                      isFutureTab && "ring-2 ring-destructive/70"
                     )}
                   >
                     {group.title} ({group.items.length})
@@ -162,7 +162,7 @@ export function KanbanBoard({
           </div>
         </div>
 
-        <div className="flex-grow mt-2 overflow-y-auto">
+        <div className="flex-grow mt-3 overflow-y-auto rounded-xl border border-border/30 bg-card/20 backdrop-blur-sm shadow-inner">
           {displayableDateGroups.map((group) => (
             <TabsContent key={group.dateString} value={group.dateString} className="h-full mt-0">
               <DateLinksList

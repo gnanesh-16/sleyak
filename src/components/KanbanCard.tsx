@@ -132,7 +132,7 @@ export function KanbanCard({
       onDrop={!isGroupMode ? handleDrop : undefined}
       onClick={isGroupMode && onToggleSelect ? () => onToggleSelect(linkItem) : undefined}
       className={cn(
-        'card-hover relative',
+        'card-hover relative group overflow-hidden border-border/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:border-border/70 hover:-translate-y-1 rounded-xl bg-gradient-to-br from-card/95 via-card/80 to-card/70 backdrop-blur-sm',
         {
           'dragging': !isGroupMode && isDragging && draggingCardId === linkItem.id,
           'drop-target': !isGroupMode && isDragging && draggingCardId !== linkItem.id,
@@ -142,7 +142,7 @@ export function KanbanCard({
         }
       )}
     >
-      <div className="relative w-full aspect-[16/9] rounded-t-lg overflow-hidden bg-muted">
+      <div className="relative w-full aspect-[16/9] rounded-t-lg overflow-hidden bg-muted/40">
         {linkItem.orderInTab && (
           <div className="absolute top-2 left-2 bg-black/60 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full z-10 shadow-md">
             {linkItem.orderInTab}
@@ -155,7 +155,7 @@ export function KanbanCard({
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             style={{ objectFit: 'cover' }}
-            className="rounded-t-lg"
+            className="rounded-t-lg transition-transform duration-500 group-hover:scale-105"
             data-ai-hint="website preview"
             onError={() => {
               setImageError(true);
@@ -164,6 +164,7 @@ export function KanbanCard({
         ) : (
           renderImagePlaceholder()
         )}
+        <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity bg-[linear-gradient(to_top,rgba(0,0,0,0.55),transparent_60%)]" />
       </div>
       <CardHeader className={`p-4 ${linkItem.ogImageUrl && !imageError ? 'pt-2' : 'pt-4'}`}>
         <div className="flex justify-between items-start">
@@ -182,7 +183,7 @@ export function KanbanCard({
                 target.setAttribute('data-ai-hint', 'placeholder icon');
               }}
             />
-            <CardTitle className="text-base font-semibold truncate" title={linkItem.title}>
+            <CardTitle className="text-base font-semibold truncate leading-snug" title={linkItem.title}>
               {linkItem.title}
             </CardTitle>
           </div>
@@ -195,10 +196,10 @@ export function KanbanCard({
       </CardHeader>
       {linkItem.description && (
         <CardContent className="p-4 pt-0">
-          <p className="text-sm text-muted-foreground break-words line-clamp-2">{linkItem.description}</p>
+          <p className="text-sm text-muted-foreground/90 break-words line-clamp-2 leading-relaxed">{linkItem.description}</p>
         </CardContent>
       )}
-      <CardFooter className="p-4 pt-2 flex flex-wrap sm:flex-nowrap justify-between items-center gap-2 mt-auto">
+      <CardFooter className="relative z-10 p-4 pt-2 flex flex-wrap sm:flex-nowrap justify-between items-center gap-2 mt-auto bg-gradient-to-t from-card/90 to-transparent backdrop-blur-sm border-t border-border/20">
         <div className="flex items-center gap-2">
           <DatePicker
             date={linkItem.todoDate ? parseISO(linkItem.todoDate) : undefined}
@@ -212,15 +213,14 @@ export function KanbanCard({
           )}
           <span className="text-[0.7rem] text-muted-foreground whitespace-nowrap">{formattedPasteTime}</span>
         </div>
-
-        <div className="flex gap-1 self-end">
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onShare(linkItem)} aria-label="Share link">
+        <div className="flex gap-1 self-end opacity-70 group-hover:opacity-100 transition-opacity duration-200">
+          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/15 hover:text-primary transition-colors" onClick={() => onShare(linkItem)} aria-label="Share link">
             <Share2 className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEdit(linkItem)} aria-label="Edit link">
+          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/15 hover:text-primary transition-colors" onClick={() => onEdit(linkItem)} aria-label="Edit link">
             <Edit3 className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => onDelete(linkItem.id)} aria-label="Delete link">
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/20 hover:text-destructive transition-colors" onClick={() => onDelete(linkItem.id)} aria-label="Delete link">
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>

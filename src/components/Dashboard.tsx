@@ -7,9 +7,6 @@ import { KanbanBoard } from './KanbanBoard';
 import { LinkItemModal } from './LinkItemModal';
 import { AddTabModal } from './AddTabModal';
 import { ShareLinkModal } from './ShareLinkModal';
-import { GroupCardsToggle } from './GroupCardsToggle';
-import { CardGroupDialog } from './CardGroupDialog';
-import useCardGroups from '@/hooks/useCardGroups';
 import { useToast } from "@/hooks/use-toast";
 import { fetchLinkMetadata } from '@/app/actions';
 import { format, parseISO, isSameDay, startOfDay, isFuture, subDays } from 'date-fns';
@@ -61,11 +58,6 @@ export function Dashboard() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [sharingLink, setSharingLink] = useState<LinkItem | null>(null);
   const [isBoardBlurred, setIsBoardBlurred] = useState(false);
-
-  // Group Cards Feature
-  const [isGroupMode, setIsGroupMode] = useState(false);
-  const [selectedCards, setSelectedCards] = useState<LinkItem[]>([]);
-  const { groups, createGroup, deleteGroup, getGroupsForTab } = useCardGroups();
 
 
   useEffect(() => {
@@ -244,9 +236,10 @@ export function Dashboard() {
     });
 
     if (deletedLink) {
-      addLinkToHistory(deletedLink, originalDateGroup, originalTabTitle);
-      logEvent('LINK_DELETED', { title: deletedLink.title, relatedId: deletedLink.id });
-      toast({ title: "Link Moved to History", description: `"${deletedLink.title}" has been moved to history.` });
+      const d = deletedLink as LinkItem; // Narrow for TS
+      addLinkToHistory(d, originalDateGroup, originalTabTitle);
+      logEvent('LINK_DELETED', { title: d.title, relatedId: d.id });
+      toast({ title: "Link Moved to History", description: `"${d.title}" has been moved to history.` });
     }
   };
 
@@ -449,53 +442,6 @@ export function Dashboard() {
     setIsBoardBlurred(false);
   };
 
-  // Group Cards Feature
-  const handleToggleGroupMode = (enabled: boolean) => {
-    setIsGroupMode(enabled);
-    // Clear selection when disabling group mode
-    if (!enabled) {
-      setSelectedCards([]);
-    }
-  };
-
-  const handleToggleCardSelection = (linkItem: LinkItem) => {
-    setSelectedCards(prev => {
-      const isSelected = prev.some(card => card.id === linkItem.id);
-      if (isSelected) {
-        return prev.filter(card => card.id !== linkItem.id);
-      } else {
-        return [...prev, linkItem];
-      }
-    });
-  };
-
-  const handleSaveCardGroup = (groupName: string) => {
-    const cardIds = selectedCards.map(card => card.id);
-    createGroup(groupName, cardIds, activeTab);
-    // Clear selection after saving
-    setSelectedCards([]);
-    // Exit group mode
-    setIsGroupMode(false);
-  };
-
-  const handleOpenCardGroup = (groupId: string) => {
-    const group = groups.find(g => g.id === groupId);
-    if (!group) return;
-
-    // Find all cards in the group
-    const activeGroup = boardData.dateGroups.find(dg => dg.dateString === activeTab);
-    if (!activeGroup) return;
-
-    // Set selected cards based on the group's card IDs
-    const groupCards = activeGroup.items.filter(item =>
-      group.cardIds.includes(item.id)
-    );
-
-    // Enable group mode and select the cards
-    setIsGroupMode(true);
-    setSelectedCards(groupCards);
-  };
-
   return (
     <div className={`flex flex-col h-[calc(100vh-var(--header-height))] ${isBoardBlurred ? 'backdrop-blur-sm' : ''} transition-all duration-300`}>
       <style jsx global>{`
@@ -504,9 +450,6 @@ export function Dashboard() {
           --input-section-height: 40px; 
         }
       `}</style>
-      <div className="p-4 border-b">
-        <p className="text-xs text-muted-foreground container mx-auto text-center">Tip: You can paste links (Ctrl+V or Cmd+V) into the active tab.</p>
-      </div>
       <KanbanBoard
         boardData={boardData}
         activeTab={activeTab}
@@ -518,47 +461,7 @@ export function Dashboard() {
         onAttemptDeleteTab={handleAttemptDeleteTab}
         onShareLink={handleOpenShareModal}
         onBoardUpdate={(updatedData) => setBoardData(updatedData)}
-        isGroupMode={isGroupMode}
-        selectedCards={selectedCards}
-        onToggleGroupMode={handleToggleGroupMode}
-        onToggleCardSelection={handleToggleCardSelection}
       />
-
-      {isGroupMode && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-10 bg-primary text-primary-foreground rounded-md shadow-md px-4 py-2 flex items-center gap-2">
-          <span>Group Mode: {selectedCards.length} card{selectedCards.length !== 1 ? 's' : ''} selected</span>
-          <Button variant="secondary" size="sm" onClick={() => handleToggleGroupMode(false)}>
-            Exit Group Mode
-          </Button>
-        </div>
-      )}
-
-      {isGroupMode && selectedCards.length > 0 && (
-        <div className="fixed bottom-4 right-4 z-10">
-          <CardGroupDialog
-            selectedCards={selectedCards}
-            onSaveGroup={handleSaveCardGroup}
-            groups={groups}
-            onDeleteGroup={deleteGroup}
-            onOpenGroup={handleOpenCardGroup}
-            activeTab={activeTab}
-          />
-        </div>
-      )}
-
-      {/* Show My Groups button in normal mode */}
-      {!isGroupMode && activeTab && getGroupsForTab(activeTab).length > 0 && (
-        <div className="fixed bottom-4 right-4 z-10">
-          <CardGroupDialog
-            selectedCards={[]}
-            onSaveGroup={handleSaveCardGroup}
-            groups={groups}
-            onDeleteGroup={deleteGroup}
-            onOpenGroup={handleOpenCardGroup}
-            activeTab={activeTab}
-          />
-        </div>
-      )}
 
       {editingLink && (
         <LinkItemModal
