@@ -134,9 +134,9 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className={cn("flex flex-col min-h-screen bg-gradient-to-b from-background via-background/60 to-background text-foreground relative")}>
+    <div className={cn("dark flex flex-col min-h-screen bg-black text-foreground relative")}>
       {/* Header */}
-      <header className="py-4 px-6 sm:px-10 sticky top-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border/40">
+      <header className="py-4 px-6 sm:px-10 sticky top-0 z-50 backdrop-blur-xl bg-black/70 border-b border-border/40">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <TodlexLogo />
@@ -152,16 +152,16 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main className="flex-grow">
-        <section className="relative overflow-hidden">
+        <section className="relative overflow-hidden bg-black">
           <div className="absolute inset-0 pointer-events-none [mask-image:radial-gradient(circle_at_center,white,transparent)] bg-[radial-gradient(circle_at_30%_30%,hsl(var(--primary)/0.15),transparent_60%),radial-gradient(circle_at_70%_70%,hsl(var(--primary)/0.08),transparent_60%)]" />
           <div className="container mx-auto px-6 pt-28 pb-24 md:pt-36 md:pb-40 text-center flex flex-col items-center relative">
             <AnimatedScrollSection delay="0.05s">
-              <h1 className="text-4xl md:text-6xl font-semibold tracking-tight bg-gradient-to-b from-foreground to-foreground/70 text-transparent bg-clip-text mb-6 max-w-5xl leading-[1.05]">
-                The temporal workspace <br className="hidden md:block" /> 
+              <h1 className="text-4xl md:text-6xl font-semibold tracking-tight text-foreground mb-6 max-w-5xl leading-[1.05]">
+                The temporal workspace <br className="hidden md:block" />
               </h1>
             </AnimatedScrollSection>
             <AnimatedScrollSection delay="0.15s">
-              <p className="text-base md:text-xl text-muted-foreground/90 mb-10 leading-relaxed max-w-2xl mx-auto">
+              <p className="text-base md:text-xl text-foreground mb-10 leading-relaxed max-w-2xl mx-auto">
                 Capture first. Structure emerges automatically. Stop shoving URLs into endless folders—experience a living day‑by‑day canvas.
               </p>
             </AnimatedScrollSection>
@@ -180,12 +180,12 @@ export default function LandingPage() {
 
 
         {/* Core Features Section */}
-        <AnimatedScrollSection className="py-24 bg-background border-t border-border/30">
+        <AnimatedScrollSection className="py-24 bg-black border-t border-border/30">
           <div className="container mx-auto px-6">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-10 mb-14">
               <div>
                 <h2 className="text-3xl md:text-5xl font-semibold tracking-tight mb-4">Built for velocity</h2>
-                <p className="text-muted-foreground max-w-xl text-base md:text-lg">A modern spatial layer over your research, learning & execution. Design language optimized for 2025 attention patterns: low chrome, high semantic contrast.</p>
+                <p className="text-foreground max-w-xl text-base md:text-lg">A modern spatial layer over your research, learning & execution. Design language optimized for 2025 attention patterns: low chrome, high semantic contrast.</p>
               </div>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
@@ -197,7 +197,7 @@ export default function LandingPage() {
                       <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">{f.icon}</span>
                       <h3 className="text-base font-medium leading-tight">{f.title}</h3>
                     </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed pr-2">{f.blurb}</p>
+                    <p className="text-sm text-foreground leading-relaxed pr-2">{f.blurb}</p>
                   </div>
                 </AnimatedScrollSection>
               ))}
@@ -206,10 +206,10 @@ export default function LandingPage() {
         </AnimatedScrollSection>
 
         {/* How It Works Section */}
-        <AnimatedScrollSection className="py-24 bg-card/20 border-y border-border/30">
+        <AnimatedScrollSection className="py-24 bg-black border-y border-border/30">
           <div className="container mx-auto px-6">
             <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-center mb-4">Flow pipeline</h2>
-            <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-16">A four stage lifecycle. Optimized for mental load reduction and recall.</p>
+            <p className="text-center text-foreground max-w-2xl mx-auto mb-16">A four stage lifecycle. Optimized for mental load reduction and recall.</p>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
               {processPillars.map((p, i) => (
                 <AnimatedScrollSection key={p.step} delay={`${i * 0.07}s`}>
@@ -219,7 +219,7 @@ export default function LandingPage() {
                       <span className="w-2 h-2 rounded-full bg-primary/70 shadow-[0_0_0_4px_hsl(var(--primary)/0.15)]" />
                     </div>
                     <h3 className="text-lg font-medium mb-2">{p.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
+                    <p className="text-sm text-foreground leading-relaxed">{p.desc}</p>
                   </div>
                 </AnimatedScrollSection>
               ))}
@@ -228,13 +228,13 @@ export default function LandingPage() {
         </AnimatedScrollSection>
 
         {/* "Todlex in Action" Visual Section Placeholder */}
-        <AnimatedScrollSection className="py-28 bg-background relative">
+        <AnimatedScrollSection className="py-28 bg-black relative">
           <div className="container mx-auto px-6">
             <div className="relative rounded-3xl border border-border/40 bg-gradient-to-br from-card/70 via-card/40 to-card/20 p-10 md:p-16 overflow-hidden">
               <div className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-60 bg-[linear-gradient(120deg,hsl(var(--primary)/0.08),transparent_40%,transparent),radial-gradient(circle_at_80%_20%,hsl(var(--primary)/0.12),transparent_55%)]" />
               <div className="relative z-10 max-w-3xl">
                 <h2 className="text-3xl md:text-5xl font-semibold tracking-tight mb-6">Your cognition layer</h2>
-                <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-10">A single temporal surface for research bursts, learning sprints & execution context. No account required—jump straight into structured clarity.</p>
+                <p className="text-foreground text-base md:text-lg leading-relaxed mb-10">A single temporal surface for research bursts, learning sprints & execution context. No account required—jump straight into structured clarity.</p>
                 <Button size="lg" onClick={handleGetStartedClick} className="h-14 px-10 rounded-full text-base font-medium shadow-lg shadow-primary/25">Launch Now <ArrowRight className="ml-2 h-5 w-5" /></Button>
               </div>
             </div>
@@ -247,15 +247,15 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-10 border-t border-border/30 bg-card/20">
+      <footer className="py-10 border-t border-border/30 bg-black">
         <div className="container mx-auto px-6 text-center">
           <div className="flex items-center justify-center gap-2 mb-3">
             <TodlexLogo className="h-7 w-7" /> <span className="text-lg font-semibold text-foreground">Todlex</span>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-foreground">
             Simplifying your digital life, one link at a time.
           </p>
-          <p className="text-xs text-muted-foreground mt-6">
+          <p className="text-xs text-foreground mt-6">
             {currentYear !== null ? `© ${currentYear} Todlex. All rights reserved.` : '© Todlex. All rights reserved.'}
           </p>
         </div>
